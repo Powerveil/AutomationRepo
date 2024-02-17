@@ -1,5 +1,5 @@
 import psutil
-
+import re
 
 def get_process_by_port(port):
     # 创建一个集合用于存储已经发现的进程ID
@@ -25,6 +25,10 @@ def get_process_by_port(port):
     return process_ids
 
 
+def is_positive_integer(str):
+    # 使用正则表达式判断字符串是否是大于零的整数
+    return bool(re.match(r'^[1-9]\d*$', str))
+
 port_number = int(input("请输入端口号："))
 processes = get_process_by_port(port_number)
 
@@ -39,24 +43,27 @@ for index, process in enumerate(processes):
 
 
 while True:
-    flagStr = str(input("是否删除该进程(Y/N，删除下标（默认第一个）。[Y 1])"))
+    flagStr = str(input("是否删除该进程(Y/N，删除下标（默认第一个）。[Y 1]或[1])"))
     print("flagStr:" + flagStr)
 
-    flag = flagStr[0].upper()
-
     index = 0
-    if len(flagStr) == 3:
-        index = int(flagStr[2]) - 1
+    if is_positive_integer(flagStr[0]):
+        flag = 'Y'
+        index = int(flagStr[0]) - 1
+    else:
+        flag = flagStr[0].upper()
+        if len(flagStr) == 3:
+            index = int(flagStr[2]) - 1
 
     if flag == 'Y':
         process = processes[index]
         psutil.Process(process["pid"]).terminate()
         print("您已经删除了该进程！！！")
-        print("索引: {}, 进程ID: {}, 进程名称: {}".format(
+        print("已删除进程信息==>索引: {}, 进程ID: {}, 进程名称: {}".format(
             index + 1, process["pid"], process["name"]))
         break
     elif flag == 'N':
         print("您取消了删除进程")
         break
     else:
-        print("请输入Y或N")
+        print("是否删除该进程(Y/N，删除下标（默认第一个）。[Y 1]或[1])")
