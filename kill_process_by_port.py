@@ -32,20 +32,31 @@ if not processes:
     print("未找到该端口的进程")
     exit()
 
-process = processes[0]
-print("进程ID: {}, 进程名称: {}\n".format(process["pid"], process["name"]))
+
+for index, process in enumerate(processes):
+    print("索引: {}, 进程ID: {}, 进程名称: {}".format(
+        index + 1, process["pid"], process["name"]))
 
 
 while True:
-    flagStr = str(input("是否删除该进程(Y/N，默认删除第一个)")).upper()
-    # print("flagStr:" + flagStr)
+    flagStr = str(input("是否删除该进程(Y/N，删除下标（默认第一个）。[Y 1])"))
+    print("flagStr:" + flagStr)
 
-    if flagStr == 'Y':
+    flag = flagStr[0].upper()
+
+    index = 0
+    if len(flagStr) == 3:
+        index = int(flagStr[2]) - 1
+
+    if flag == 'Y':
+        process = processes[index]
         psutil.Process(process["pid"]).terminate()
         print("您已经删除了该进程！！！")
+        print("索引: {}, 进程ID: {}, 进程名称: {}".format(
+            index + 1, process["pid"], process["name"]))
         break
-    elif flagStr == 'N':
-        print("您取消了删除该进程")
+    elif flag == 'N':
+        print("您取消了删除进程")
         break
     else:
         print("请输入Y或N")
